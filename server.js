@@ -1,12 +1,14 @@
 const express = require("express");
 
 const app = express();
+const { MongoClient } = require("mongodb"); // 몽고db 서버와연결 코드
 
 app.use(express.static(__dirname + "/public")); // 이렇게  코드를 작성하게되면 /public의 내용들을 자유자재로사용가능
 
 app.set("view engine", "ejs"); // 템플릿 엔진을 쓰려면 view engine을  사용하겠다고 적어야함. 그래서 ejs를 사용해서 html 파일안에 데이터를 넣을수있다 ./
 
-const { MongoClient } = require("mongodb"); // 몽고db 서버와연결 코드
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 let db;
 const url =
@@ -34,7 +36,7 @@ app.get("/list", async (요청, 응답) => {
   let result = await db.collection("post").find().toArray();
   // 응답.send(result);
 
-  응답.render("list.ejs", { title: result }); //그리고 list.ejs로 값들을 화면에 표현가능하게 보내줌
+  응답.render("list.ejs", { title: result }); //그리고 render list,ejs 파일의  값들을 화면에 표현가능하게 보내줌
 });
 app.get("/shop", (요청, 응답) => {
   응답.send("쇼핑페이지입니다.");
@@ -46,4 +48,28 @@ app.get("/about", (요청, 응답) => {
 
 app.get("/time", (요청, 응답) => {
   응답.render("time.ejs", { 시간: new Date() }); //render를 써야지  ejs로 서버에서 요청해온값을 html 화면상에보여줄수있다.
+});
+
+app.get("/write", (요청, 응답) => {
+  응답.render("write.ejs");
+});
+
+app.post("/add", async (요청, 응답) => {
+  try {
+    if (요청.body.title == "" || 요청.body.content == "") {
+      응답.send("빈칸이존재");
+    } else {
+      await db
+        .collection("post")
+
+        .insertOne({ title: 요청.body.title, content: 요청.body.content });
+
+      응답.redirect("/list"); //를하게되면  위에코드가 실행뒤에 바로    /list페이지로 이동된다 .
+
+      // console.log(요청.body); // 요청.body를 사용하려면 위에 app.use json과ㅏ urlencoded를 사용해야함 데이터를 꺼내쓰기가힘든데 요청 .body에 쉽게 넣어줌.
+    }
+  } catch (e) {
+    console.log(e); //에러메시지 출력해줌
+    응답.status(500).send("서버에서에러남"); //에러시 에러상태 코드를 적어주면좋다 .
+  }
 });
