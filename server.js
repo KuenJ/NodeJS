@@ -1,7 +1,7 @@
 const express = require("express");
 
 const app = express();
-const { MongoClient } = require("mongodb"); // 몽고db 서버와연결 코드
+const { MongoClient, ObjectId } = require("mongodb"); // 몽고db 서버와연결 코드
 
 app.use(express.static(__dirname + "/public")); // 이렇게  코드를 작성하게되면 /public의 내용들을 자유자재로사용가능
 
@@ -54,7 +54,21 @@ app.get("/write", (요청, 응답) => {
   응답.render("write.ejs");
 });
 
+//상세페이지 조회
+app.get("/detail/:id", async (요청, 응답) => {
+  try {
+    let result = await db
+      .collection("post")
+      .findOne({ _id: new ObjectId(요청.params.id) });
+    console.log("DB에서 가져온 결과:", result); // 결과를 로그에 출력
+    응답.render("detail.ejs", { result: result });
+  } catch (error) {
+    console.error("DB 조회 중 오류:", error); // 오류가 있을 경우 로그에 출력
+    // 오류 처리 로직 추가
+  }
+});
 app.post("/add", async (요청, 응답) => {
+  console.log(요청.body);
   try {
     if (요청.body.title == "" || 요청.body.content == "") {
       응답.send("빈칸이존재");
