@@ -14,14 +14,24 @@
 
    <% for(let i =0 ; i < title.length ;i++){ %>
        <div class="list-box">
-    <h4><%= title[i].title %></h4>
+          <!--  <%= JSON.stringify(title[i]._id) %>  JSON.stringify()는 JavaScript 객체를 JSON 문자열로 변환하는 데 사용됩니다. J-->
+    <h4>
+      <a href="/detail/<%= title[i]._id %>">
+      <%= title[i].title %>
+       </a>
+       <a href="/edit/<%= title[i]._id %>">✏️</a> <!--뒤에는 글에해당하는 id를직접넣어줘서 해당하는 id 에맞게 요청페이지 접속가능하게한것이다 .-->
+    </h4>
+   
     <p><%= title[i].content %></p>
+ 
   </div>
     <%} %>
- 
+
  
   </div>
 </div> 
+ 
 </div> 
+
 </body>
 </html>

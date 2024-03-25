@@ -54,20 +54,47 @@ app.get("/write", (요청, 응답) => {
   응답.render("write.ejs");
 });
 
+app.get("/edit/:id", async (요청, 응답) => {
+  //페이지 조회때 :id 해당하는게있으면 그걸통해서 가져온다 .
+  let result = await db
+    .collection("post")
+    .findOne({ _id: new ObjectId(요청.params.id) });
+  // console.log(result);
+  응답.render("edit.ejs", { result: result });
+});
+
 //상세페이지 조회
 app.get("/detail/:id", async (요청, 응답) => {
-  try {
-    let result = await db
-      .collection("post")
-      .findOne({ _id: new ObjectId(요청.params.id) });
-    console.log("DB에서 가져온 결과:", result); // 결과를 로그에 출력
-    응답.render("detail.ejs", { result: result });
-  } catch (error) {
-    console.error("DB 조회 중 오류:", error); // 오류가 있을 경우 로그에 출력
-    // 오류 처리 로직 추가
-  }
+  // try {
+  let result = await db
+    .collection("post")
+    .findOne({ _id: new ObjectId(요청.params.id) }); // 뒤에 .id는 위에 detail:id의 id이다 . 맞춰줘야한다 .
+  // ; console.log("DB에서 가져온 결과:", result);// 결과를 로그에 출력
+
+  // if (result == null) {
+  //   응답.status(400).send("url을 잘못입력하셨습니다.");
+  // }
+  응답.render("detail.ejs", { result: result });
+  // } catch (e) {
+  //   console.log(e);
+  //   응답.status(400).send("URL을 올바르게 입력해주세요"); // 오류가 있을 경우 로그에 출력
+  //   // 오류 처리 로직 추가 강의에선 간결하게  강의를위해 지웠지만  에러처리해야함 .
+  // }
 });
+
+app.post("/edit", async (요청, 응답) => {
+  //수정코드,
+  await db.collection("post").updateOne(
+    { _id: new ObjectId(요청.body.id) },
+    {
+      $set: { title: 요청.body.title, content: 요청.body.content },
+    }
+  );
+  응답.redirect("/list");
+});
+
 app.post("/add", async (요청, 응답) => {
+  //등록하는코드
   console.log(요청.body);
   try {
     if (요청.body.title == "" || 요청.body.content == "") {

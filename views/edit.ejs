@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+     <link rel="stylesheet" href="/main.css">
+</head>
+<body class="grey-bg">
+
+    <%- include('nav.ejs') %>   
+      <!--현재 보면 action에는 url  method에는 post를하고 버튼으로 submit을 주게된다면 서버로 post를 요청하는법인것이다.  -->
+    <form class="form-box" action="/edit" method="post">
+    <h4>수정하기</h4>
+    <!-- <%= JSON.stringify(result)%> -->
+    <input name="id"value="<%= result._id %>" style="display : none"> 
+    <input name="title" value="<%= result.title%>">    <!--name속성을 꼭넣어줘야지  지정해서 넣어줄수있다.-->  <!--value를 쓰면 미리 값이채워진것값을사요가능.-->
+    <input name="content"value="<%= result.content%>">
+    <button type="submit">전송</button>
+
+</form> 
+</div> 
+</div> 
+</body>
+</html>
