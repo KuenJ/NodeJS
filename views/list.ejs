@@ -20,18 +20,67 @@
       <%= title[i].title %>
        </a>
        <a href="/edit/<%= title[i]._id %>">✏️</a> <!--뒤에는 글에해당하는 id를직접넣어줘서 해당하는 id 에맞게 요청페이지 접속가능하게한것이다 .-->
-    </h4>
+       <span class="delete" data-id="<%= title[i]._id %>" >🗑️</span>  <!-- data-id로 해서  function에(e) 로매개변수준뒤 값들을 e.target.dataset.id로 넣어주면 id정보값이보내진다 .-->
    
     <p><%= title[i].content %></p>
  
   </div>
     <%} %>
+<!--foreach로    for문을 대신하면좀더좋을것같다 
+
+  <% title.forEach(function(item) { %>
+    <div class="list-box">
+        <h4>
+            <a href="/detail/<%= item._id %>">
+                <%= item.title %>
+            </a>
+            <a href="/edit/<%= item._id %>">✏️</a>
+            <span class="delete" data-id="<%= item._id %>" >🗑️</span>
+        </h4>
+        <p><%= item.content %></p>
+    </div>
+<% }); %>
+
+  
+  
+  .-->
+
+
 
  
   </div>
 </div> 
- 
+  
 </div> 
+
+<script>
+  // console.log('<%= title[0]._id %>')
+
+ 
+  // NodeList를 배열로 변환하여 각 요소에 대해 이벤트 리스너를 추가합니다.
+  // document.querySelectorAll('.delete').forEach(function(element) {  //document.querySelactorAll을 사용하면 선택한 모든요소에대한목록을 반환하므로 forEach메서드를 사용하여 각요소에대한작업수행가능 
+  //   element.addEventListener('click', function(e) {
+  //     fetch('/delete?docid=' + e.target.dataset.id, {
+  //       method: 'DELETE'
+  //     });
+  //   });
+  // });
+
+  for (let i = 0; i <'<%= title.length%>'; i++) {
+    document.querySelectorAll('.delete')[i]
+      .addEventListener('click', function(e) {
+        fetch('/delete?docid=' + e.target.dataset.id, {
+          method: 'DELETE'
+        })
+        .then((r)=>r.text())
+        .then((r)=>{console.log(r)})
+      })
+  }
+
+</script>
+
+
+</script>
 
 </body>
 </html>

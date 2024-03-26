@@ -9,7 +9,7 @@
 
     <%- include('nav.ejs') %>   
       <!--현재 보면 action에는 url  method에는 post를하고 버튼으로 submit을 주게된다면 서버로 post를 요청하는법인것이다.  -->
-    <form class="form-box" action="/edit" method="post">
+    <form class="form-box" action="/edit?_method=PUT" method="post">
     <h4>수정하기</h4>
     <!-- <%= JSON.stringify(result)%> -->
     <input name="id"value="<%= result._id %>" style="display : none"> 

@@ -3,6 +3,9 @@ const express = require("express");
 const app = express();
 const { MongoClient, ObjectId } = require("mongodb"); // 몽고db 서버와연결 코드
 
+const methodOverride = require("method-override"); //method-override를 사용해서 put,delete를 form에서 사용하기위해 2줄   추가
+app.use(methodOverride("_method"));
+
 app.use(express.static(__dirname + "/public")); // 이렇게  코드를 작성하게되면 /public의 내용들을 자유자재로사용가능
 
 app.set("view engine", "ejs"); // 템플릿 엔진을 쓰려면 view engine을  사용하겠다고 적어야함. 그래서 ejs를 사용해서 html 파일안에 데이터를 넣을수있다 ./
@@ -82,7 +85,8 @@ app.get("/detail/:id", async (요청, 응답) => {
   // }
 });
 
-app.post("/edit", async (요청, 응답) => {
+app.put("/edit", async (요청, 응답) => {
+  // await db.collection("post").updateOne({ _id: 1 }, { $inc: { like: 10 } });  like  예제 시험해봄,
   //수정코드,
   await db.collection("post").updateOne(
     { _id: new ObjectId(요청.body.id) },
@@ -90,7 +94,17 @@ app.post("/edit", async (요청, 응답) => {
       $set: { title: 요청.body.title, content: 요청.body.content },
     }
   );
+  console.log(요청.body);
   응답.redirect("/list");
+});
+
+app.delete("/delete", async (요청, 응답) => {
+  //삭제기능
+  console.log(요청.query);
+  await db
+    .collection("post")
+    .deleteOne({ _id: new ObjectId(요청.query.docid) });
+  응답.send("삭제완료");
 });
 
 app.post("/add", async (요청, 응답) => {
