@@ -95,7 +95,7 @@ app.put("/edit", async (요청, 응답) => {
     }
   );
   console.log(요청.body);
-  응답.redirect("/list");
+  응답.redirect("/list/:id");
 });
 
 app.delete("/delete", async (요청, 응답) => {
@@ -119,7 +119,7 @@ app.post("/add", async (요청, 응답) => {
 
         .insertOne({ title: 요청.body.title, content: 요청.body.content });
 
-      응답.redirect("/list"); //를하게되면  위에코드가 실행뒤에 바로    /list페이지로 이동된다 .
+      응답.redirect("/list/:id"); //를하게되면  위에코드가 실행뒤에 바로    /list페이지로 이동된다 .
 
       // console.log(요청.body); // 요청.body를 사용하려면 위에 app.use json과ㅏ urlencoded를 사용해야함 데이터를 꺼내쓰기가힘든데 요청 .body에 쉽게 넣어줌.
     }
@@ -127,4 +127,39 @@ app.post("/add", async (요청, 응답) => {
     console.log(e); //에러메시지 출력해줌
     응답.status(500).send("서버에서에러남"); //에러시 에러상태 코드를 적어주면좋다 .
   }
+});
+
+// app.get("/list/:page", async (요청, 응답) => {
+//   let result = await db
+//     .collection("post")
+//     .find()
+//     .skip((요청.params.id - 1) * 5)
+//     .limit(5)
+//     .toArray();
+
+//   console.log(요청.params.id);
+
+//   응답.render("list.ejs", { title: result });
+// });
+
+app.get("/list/:id", async (요청, 응답) => {
+  //페이지네이션 코드
+  const page = parseInt(요청.params.id) || 1; // 페이지 번호를 정수로 변환
+  const limit = 5;
+  const totalPosts = await db.collection("post").countDocuments(); // 총 게시물 수 계산
+  const totalPages = Math.ceil(totalPosts / limit); // 총 페이지 수 계산
+  const skip = (page - 1) * limit;
+  let result = await db
+    .collection("post")
+    .find()
+    .skip(skip)
+    .limit(limit)
+    .toArray();
+  console.log(totalPages);
+
+  응답.render("list.ejs", {
+    title: result, // 게시물 목록
+    currentPage: page, // 현재 페이지 번호
+    totalPages: totalPages, // 총 페이지 수
+  });
 });
