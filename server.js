@@ -13,6 +13,26 @@ app.set("view engine", "ejs"); // 템플릿 엔진을 쓰려면 view engine을  
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// 회원기능 만들기
+const session = require("express-session");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+
+app.use(passport.initialize());
+app.use(
+  session({
+    secret: "qwert123",   //암호화에 쓸 비번
+    resave: false,        //유저가 서버로 요청할때마다 세션을 갱신할건지 .
+    saveUninitialized: false,   //로그인안해도 세션할건지 에대해서 
+  })
+);
+
+app.use(passport.session());
+
+
+
+
+
 let db;
 const url =
   "mongodb+srv://admin:qwer1234@mydb.wc4ebps.mongodb.net/?retryWrites=true&w=majority&appName=MyDB";

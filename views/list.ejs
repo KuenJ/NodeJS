@@ -34,16 +34,14 @@
               >Previous</a
             >
           </li>
-          <% } %>
-           <% for (let i = 1; i <= totalPages; i++) { %>
+          <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
           <li class="page-item <%= currentPage === i ? 'active' : '' %>">
             <a class="page-link" href="/list/<%= i %>"><%= i %></a>
           </li>
-          <% } %> 
-          <% if (currentPage < totalPages) { %>
+          <% } %> <% if (currentPage < totalPages) { %>
           <li class="page-item">
             <a class="page-link" href="/list/<%= currentPage + 1 %>">Next</a>
-          </li>
+          </li> 
           <% } %>
         </ul>
       </nav>
