@@ -21,17 +21,13 @@ const LocalStrategy = require("passport-local");
 app.use(passport.initialize());
 app.use(
   session({
-    secret: "qwert123",   //암호화에 쓸 비번
-    resave: false,        //유저가 서버로 요청할때마다 세션을 갱신할건지 .
-    saveUninitialized: false,   //로그인안해도 세션할건지 에대해서 
+    secret: "qwert123", //암호화에 쓸 비번
+    resave: false, //유저가 서버로 요청할때마다 세션을 갱신할건지 .
+    saveUninitialized: false, //로그인안해도 세션할건지 에대해서
   })
 );
 
 app.use(passport.session());
-
-
-
-
 
 let db;
 const url =
@@ -182,4 +178,34 @@ app.get("/list/:id", async (요청, 응답) => {
     currentPage: page, // 현재 페이지 번호
     totalPages: totalPages, // 총 페이지 수
   });
+});
+
+// 아이디 비밀번호가 적합한지 검사흔곳
+passport.use(
+  new LocalStrategy(async (입력한아이디, 입력한비번, cb) => {
+    let result = await db
+      .collection("user")
+      .findOne({ username: 입력한아이디 });
+    if (!result) {
+      return cb(null, false, { message: "아이디 DB에 없음" }); // false는 실패했을때
+    }
+    if (result.password == 입력한비번) {
+      return cb(null, result);
+    } else {
+      return cb(null, false, { message: "비번불일치" });
+    }
+  })
+);
+app.get("/login", async (요청, 응답) => {
+  응답.render("login.ejs");
+});
+app.post("/login", async (요청, 응답, next) => {
+  passport.authenticate("local", (error, user, info) => {
+    if (error) return 응답.status(500).json(error);
+    if (!user) return 응답.status(401).json(info.message);
+    요청.logIn(user, (err) => {
+      if (err) return next(err);
+      응답.redirect("/");
+    });
+  })(요청, 응답, next);
 });
